@@ -1,0 +1,119 @@
+\documentclass[a4paper,11pt]{article}
+\author{ 杨旭鹏  \  PB17000234}
+\date{2019年秋季}
+\title{计算物理A 第四题}
+
+\usepackage{ctex}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{lastpage}
+\usepackage{hyperref}
+\usepackage{appendix}
+\makeatletter\def\@captype{table}\makeatother
+ 
+
+
+\begin{document}
+\maketitle
+
+\section{题目描述}
+设pdf函数满足关系式：
+$$
+	p'(x) = p(x)\frac{x-d}{ax^{2}+bx+c}
+$$
+请找到其中的一种函数，讨论性质并给出抽样方法。
+
+
+\section{推导过程}
+首先观察上式，
+由于$p(x)$的导数中含有$p(x)$，则设$p(x) = exp(y(x))$，其中$y(x)$满足：
+\begin{equation}
+	y'(x) = \frac{x-d}{ax^{2}+bx+c}
+\end{equation}
+我们首先假定$a \neq 0 $，则：
+\begin{equation}
+\begin{aligned}
+	y(x) &= \int \frac{x-d}{ax^{2}+bx+c}  dx  \\
+	&= \frac{1}{2a} \int \frac{  2(x+\frac{b}{2a}) dx}{  (x+\frac{b}{2a})^{2}+(\frac{c}{a}-\frac{b^{2}}{4a^{2}})  }    -    \int \frac{(\frac{d}{a}+\frac{b}{2a^{2}})dx}{(x+\frac{b}{2a})^{2}+(\frac{c}{a}-\frac{b^{2}}{4a^{2}})}  
+\end{aligned}
+\end{equation}
+记$t = x +\frac{b}{2a}$，$\alpha^{2} = \frac{c}{a}-\frac{b^{2}}{4a^{2}}$则有：
+\begin{equation}
+\begin{aligned}
+	y(x) &= \frac{1}{2a} \int \frac{2tdt}{t^{2}+\alpha^{2}} - (\frac{d}{a}+\frac{b}{2a^{2}}) \int \frac{dt}{t^{2}+\alpha^{2}} \\
+	&= \frac{1}{2a} ln(t^{2}+\alpha^{2}) -  \frac{  (\frac{d}{a}+\frac{b}{2a^{2}}) }{\alpha} arctan(\frac{t}{\alpha}) + Const
+\end{aligned}
+\end{equation}
+其中$Const$为积分常数。则：
+\begin{equation}
+	p(x) = Const \ Exp \left\{  
+	\frac{1}{2a} ln(t^{2}+\alpha^{2}) -  \frac{  (\frac{d}{a}+\frac{b}{2a^{2}}) }{\alpha} arctan(\frac{t}{\alpha})
+	 \right\}
+\end{equation}
+取其中一种表达式，不妨取积分常数$Const = 1$，我们有：
+\begin{equation}
+	p(x) = (t^{2}+\alpha^{2})^{\frac{1}{2\alpha}}
+	 ~ Exp \left\{ - \frac{  (\frac{d}{a}+\frac{b}{2a^{2}}) }{\alpha} arctan(\frac{t}{\alpha})
+	 \right\}
+\end{equation}
+由于$arctan(x)$在$x \in (-\infty,\infty )$时$\in (-\frac{\pi}{2},\frac{\pi}{2})$，则我们采用舍选法进行抽样。
+我们有：
+\begin{equation}
+	p(x)<(t^{2}+\alpha^{2})^{\frac{1}{2\alpha}}~Exp\left\{  \frac{\pi}{2}\left|       \frac{  (\frac{d}{a}+\frac{b}{2a^{2}}) }{\alpha}  
+	\right|
+	 \right\}
+\end{equation}
+记$\beta = Exp\left\{ \frac{\pi}{2} \left|       \frac{  (\frac{d}{a}+\frac{b}{2a^{2}}) }{\alpha}  
+	\right|
+	 \right\}$
+则上式化为：
+\begin{equation}
+	p(x)<\beta (t^{2}+\alpha^{2})^{\frac{1}{2\alpha}}
+\end{equation}
+由于上式左端在$x\rightarrow \infty$时也$\rightarrow \infty$，无法进行抽样，所以我们在这里不妨假设参数$\alpha$为1，抽样区间为$[m,n]$，则比较函数简化为$\beta(t^{2}+0.25)$在$[m,n]$上的抽样。其抽样可采用直接抽样法：
+\begin{equation}
+	\xi(x) = \beta \left( \frac{t^{3}}{3} + \frac{n-m}{4}-\frac{m^{3}}{3} \right)
+\end{equation}
+其反函数为:
+\begin{equation}
+	t(\xi) = \sqrt[3]{3(\frac{\xi}{\beta} + \frac{m^{3}}{3} - \frac{n-m}{4} )}
+\end{equation}
+则我们可在$\left (0,\beta \left (\frac{n^{3}-m^{3}}{3}+\frac{n-m}{4} \right) \right)$区间上均匀抽样得到$\xi$，通过上式得到满足概率分布$\beta(t^{2}+0.25)$的比较函数的$t$的抽样。后对每一个抽样的$t$值，生成在$(0,\beta(t^{2}+0.25))$上的均匀抽样得到的数据点$\eta$，若$\eta \leq p(x)$，则取该$t$为抽样点，否则舍，则完成对$p(x)$的舍选抽样。
+
+对于使$\frac{1}{2\alpha}$ 为正整数的情况与上面类似，不再讨论，但为其他值时比较复杂，在这里不讨论。
+
+当参数$a = 0$时，有:
+\begin{equation}
+	p(x) = (c+bx)^{\frac{c+bd}{b^{2}}}e^{\frac{x}{b}}
+\end{equation}
+其讨论与上面一种情况类似，不再详细讨论。
+
+
+
+
+\end{document}
+
+
+
+
+
+则我们做一下变换：
+\begin{equation}
+	-\frac{\pi}{2} < arctan(p(x)) < arctan(\beta (t^{2}+\alpha^{2})^{\frac{1}{2\alpha}} ) < \frac{\pi}{2}
+\end{equation}
+则我们可以产生一在$(0,1)$区间均匀分布的随机抽样值$\xi$，则$\pi \xi -\frac{\pi}{2} \in (-\frac{\pi}{2},-\frac{\pi}{2})$则有：
+\begin{equation}
+	p(x) = tan(\pi \xi -\frac{\pi}{2})
+\end{equation}
+即：
+\begin{equation}
+\begin{aligned}
+	&  \frac{1}{2a} ln\left(  (x+\frac{b}{2a})^{2}+ \frac{c}{a}-\frac{b^{2}}{4a^{2}}  \right) -  \frac{  (\frac{d}{a}+\frac{b}{2a^{2}}) }{\sqrt{ \frac{c}{a}-\frac{b^{2}}{4a^{2}}}} arctan   \left(   \frac{x+\frac{b}{2a}}{\sqrt{ \frac{c}{a}-\frac{b^{2}}{4a^{2}}}}  \right)    \\ 
+	 &= ln \left(  tan(\pi \xi -\frac{\pi}{2})  \right)
+\end{aligned}
+\end{equation}
+对于每一个$\xi$，求解上式即可得到对应的$x$，且满足概率密度函数$p(x)$ 
+
+
+

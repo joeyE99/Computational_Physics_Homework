@@ -1,0 +1,630 @@
+\documentclass[a4paper,11pt]{article}
+\author{ 杨旭鹏  \  PB17000234}
+\date{2019年秋季}
+\title{计算物理A 第三题}
+
+\usepackage{ctex}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{lastpage}
+\usepackage{hyperref}
+\usepackage{listings}
+\RequirePackage{xcolor}
+\usepackage{appendix}
+\usepackage{caption2}
+\usepackage{subfigure}
+\usepackage{float}
+\makeatletter\def\@captype{table}\makeatother
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{
+  frame=tb,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  framerule=1pt,
+  rulecolor=\color{gray!35},
+  backgroundcolor=\color{gray!5},
+  basicstyle={\small\ttfamily},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3,            
+  }
+
+
+
+\begin{document}
+\maketitle
+
+\section{题目描述}
+在球坐标系$(\rho,\theta,\phi)$下产生球面上均匀分布的随机坐标点，给出 其直接抽样方法。
+
+\section{算法及程序思路}
+\subsection{算法}
+\subsubsection{16807产生器}
+16807产生器属于线性同余法产生器的特例。而线性同余法方法为：
+
+\begin{equation}
+\begin{aligned}
+	I_{n+1} &= (aI_{n} + b) \ mod \ m \\
+	x_{n} &= I_{n}/m
+\end{aligned}
+\label{linear}	
+\end{equation}
+
+其中整数$I_{i} \in [0,m-1]$，$a,b,m$为算法中的可调参数，其选取直接影响产生器的质量。选取参数：
+\begin{equation}
+\left\{
+\begin{array}{l}
+	a = 7^{5} = 16807 \\
+	b = 0 \\
+	m = 2^{31}-1 = 2147483647
+\end{array}
+\right.
+\end{equation}
+
+即为所谓的16807产生器。由于直接利用\ref{linear}编写程序时计算$(aI_{n} \ mod \ m )$时很容易造成数据溢出，故采取Schrage方法进行具体编程的实现：
+
+\begin{equation}
+	aI_{n} \ mod \ m = \left\{
+	\begin{array}{l}
+		a(I_{n}\ mod \ q) - r[I_{n}/q],\ \ \ \ \ \ \ \ if \geq 0 \\
+		a(I_{n}\ mod \ q) - r[I_{n}/q] + m,\ \ otherwise	
+			\end{array}
+	\right.
+\end{equation}
+
+其中$m=aq+r$，即$q=m/a=127773$，$r=m \ mod \ a=2836$。即可利用此方法产生伪随机数序列。
+
+
+\subsubsection{Fibonacci延迟产生器：Marsaglia 1号产生器}
+其思想是用序列中的两个整数进行操作得到后续的整数，较线性同余法的优势在于它的周期非常长：
+\begin{equation}
+	I_{n}=I_{n-p} \otimes I_{n-q} \ mod \  m
+\end{equation}
+其中操作符$\otimes$可以是：“$+$”，“$-$”，“$\times$”，“XOR”。整数对$[p,q]$表示延迟，取值并非按Fibonacci数序列，而是根据统计验证后确认。
+
+在此程序中，我们使用的是Fibonacci延迟产生器的一个特例——Marsaglia 1号 产生器：
+\begin{equation}
+	I_{n}=\left\{
+	\begin{array}{l}
+		I_{n-p} - I_{n-q},  \ \ \ \ \ \ \ if \geq 0 \\
+		I_{n-p} - I_{n-q}+1, \ \ otherwise
+	\end{array}
+	\right.
+\end{equation}
+其中的$[p,q]$整数对的值选为$[97,33]$，因此其算法要求存储所有前面的97个随机数值。在本程序中，前97个随机数值由在Linux系统下访问“/dev/random”一次性来得到\footnote{对于Linux下的“/dev/random”文件在Linux manual page 上有如下解释：The random number generator gathers environmental noise from device
+       drivers and other sources into an entropy pool.  The generator also
+       keeps an estimate of the number of bits of noise in the entropy pool.
+       From this entropy pool, random numbers are created.可以看出此种方法产生的随机数并非来自于算法，而来自于热噪声。}，\footnote{便于结果的可重复性，方便调试程序}并存储为文件以便后期读取使用(此文件的原始数据见附录 \ref{971}和\ref{972})。
+
+
+\subsubsection{直接抽样法}
+对于任意已归一化的几率密度分布函数$p(x)~(x \in [a,b])$，其累积函数$\xi(x)$的计算式为：
+\begin{equation}
+	\xi(x) = \int_{a}^{x} p(x') dx'
+\end{equation}
+其有性质$\xi(a) = 0,\xi(b) =1$。则根据上式求出$\xi(x)$的反函数$x(\xi)$，则当$\xi$为$[0,1]$上均匀分布时，得到的$x(\xi)$按照概率密度函数$p(x)$分布。此即直接抽样法。
+
+在本问题中，需要得到在球面上均匀分布的随机点，即在球面上任意位置，单位面积上点出现的概率为一定值。在某一球面上，半径$\rho$值是固定的，自变量仅为角度$\theta$和$\phi$。设概率密度函数为$p(\theta,\phi)$，则对于单位面积元上点出现的概率$d P$有：
+\begin{equation}
+	const = d P =p(\theta,\phi)d \theta d \phi dS^{2}
+\end{equation}
+
+当$d S^{2}= sin(\theta)d \theta d \phi $为定值时，我们有$d\theta \propto \frac{1}{sin(\theta)}$。则为了满足上式，我们有$p(\theta,\phi) \propto sin(\theta)$。设$p(\theta,\phi) = ksin(\theta)$，根据密度函数的归一性有
+
+\begin{equation}
+	1 = \int_{0}^{2\pi}\int_{0}^{\pi} k sin(\theta)d\theta d\phi 
+\end{equation}
+得到$k=\frac{1}{4\pi}$。即有$p(\theta,\phi)= p_{\theta}(\theta)p_{\phi}(\phi)=\frac{1}{4\pi}sin(\theta)$，再根据$p_{\theta}(\theta)$和$p_{\phi}(\phi)$的归一性得到:
+
+\begin{equation}
+\left\{
+\begin{array}{l}
+	p_{\theta}(\theta) = \frac{1}{2}sin(\theta) \\
+	p_{\phi}(\phi) = \frac{1}{2\pi}
+\end{array}
+\right.
+\end{equation}
+
+则$p_{\theta}(\theta)$和$p_{\phi}(\phi)$的累积函数$\xi(\theta)$，$\eta(\phi)$分别为：
+\begin{equation}
+\left\{
+\begin{array}{l}
+	\xi(\theta) = \frac{1}{2}-\frac{1}{2}cos(\theta) \\
+	\eta(\phi) = \frac{\phi}{2\pi}
+\end{array}
+\right.
+\end{equation}
+
+则其反函数为：
+\begin{equation}
+\left\{
+\begin{array}{l}
+	\theta(\xi) = arccos(2\xi-1) \\
+	\phi(\eta) = 2\pi \eta 
+\end{array}
+\right.
+\end{equation}
+
+则若生成两组互不相关的$[0,1]$间均匀分布的随机点$\xi,\eta$，即可利用上式得到球面上均匀分布点的$\theta$和$\phi$坐标。
+
+\subsection{程序思路}
+对于16807方法，程序需要一个种子，在本程序中需要产生两组互不相关的随机数，则需要2个“互不相关”的初始种子值。这两个种子值通过一次性读取“/dev/random”文件得到，分别为34028207和1677078722\footnote{在这里我们这么做是为了结果的可重复性}。
+
+产生随机种子后，各自利用递推公式：
+\begin{equation}
+	I_{n+1} = aI_{n}  \ mod \ m = \left\{
+	\begin{array}{l}
+	a(I_{n}\ mod \ q) - r[I_{n}/q],\ \ \ \ \ \ \ \ if \geq 0 \\
+		a(I_{n}\ mod \ q) - r[I_{n}/q] + m,\ \ otherwise	 \\
+		a= 7^{5} =16807 \\
+		q=m/a=127773\\
+		r=m \ mod \ a=2836
+	\end{array} 
+	\right.
+\end{equation}
+
+计算随机数列。
+
+对于Marsaglia 1号 产生器，所需要97个初始随机数，得到方式在上文已经提及。
+
+产生$[0,1]$的随机数后即可利用上文提到的直接抽样法得到球面均匀分布点的坐标$(\theta,\phi)$。
+
+详情请见代码。
+
+\section{程序使用方法}
+在运行程序后，会看到请求输入所需总随机点数的提示，按照提示在后面输入所需要的总随机点数，摁回车继续。然后按照程序提示，输入Marsaglia 1号产生器所需延迟整数值$[p,q]$（最大值不可超过97，Marsaglia 1号 产生器简易使用默认延迟整数值为$[97,33]$，建议按此输入），按回车继续程序。然后经过计算给出16807方法和Marsaglia方法产生的随机坐标$(\theta,\phi)$分别存为两个文件。程序输出完这些后会自动退出。
+\begin{figure}[!htbp]        
+\center{\includegraphics[width=10cm]  {example.png}}        
+\caption{\label{1} 一个典型程序的运行过程示例}      
+\end{figure}
+
+\newpage
+\section{程序结果与讨论}
+当输入一些不同的点数时，得到如下结果：
+\begin{figure}[!htbp]        
+\center{\includegraphics[width=5cm] {100.png}}        
+\caption{球面上均匀分布的100随机点}      
+\end{figure}
+
+\begin{figure}[!htbp]   
+\centering     
+\subfigure[默认视图]{
+\includegraphics[width=6cm] {103.png}
+}
+\subfigure[z方向视图]{
+\includegraphics[width=6cm] {103-v.png}
+}      
+\caption{球面上均匀分布的1000随机点}      
+\end{figure}
+
+\begin{figure}[!htbp]   
+\centering     
+\subfigure[默认视图]{
+\includegraphics[width=6cm] {104.png}
+}
+\subfigure[z方向视图]{
+\includegraphics[width=6cm] {104-v.png}
+}      
+\caption{球面上均匀分布的$10^{4}$随机点}      
+\end{figure}
+
+\begin{figure}[!htbp]   
+\centering     
+\subfigure[默认视图]{
+\includegraphics[width=6cm] {105.png}
+}
+\subfigure[z方向视图]{
+\includegraphics[width=6cm] {105-v.png}
+}      
+\caption{球面上均匀分布的$10^{5}$随机点}      
+\end{figure}
+
+\begin{figure}[!htbp]   
+\centering     
+\subfigure[默认视图]{
+\includegraphics[width=8cm] {106.png}
+}
+\subfigure[z方向视图]{
+\includegraphics[width=8cm] {106-v.png}
+}      
+\caption{球面上均匀分布的$10^{6}$随机点}      
+\end{figure}
+
+\newpage
+ 由上述结果可以看出利用16807产生器，当$N \leq 10^{6}$时，随机点在球面上的分布还算均匀，几乎看不出什么条带结构和规则网格结构等有明显规律性的结构。更高次方的点数由于计算机计算能力有限，画图比较困难，故并没有在这里给出图像和分析。当我们换取Marsaglia 1 号产生器进行试验，得到如下结果：
+
+\begin{figure}[!htbp]   
+\centering     
+\subfigure[默认视图]{
+\includegraphics[width=7cm] {fibo-6.png}
+}
+\subfigure[z方向视图]{
+\includegraphics[width=7cm] {fibo-6-v.png}
+}      
+\caption{Marsaglia 1 号产生器产生的球面上均匀分布的$10^{6}$随机点}      
+\end{figure}
+
+\clearpage
+可以看出利用marsaglia 1号产生器产生的球面上均匀分布的随机点在$N=10^{6}$时看不出什么有规律性的结构，仍可认为是比较均匀的。
+
+
+\section{心得与体会}
+通过此次作业结果，发现16807产生器和Marsaglia 1号 产生器产生的随机数的均匀性在$N \leq 10^{6}$时还是比较好的\footnote{至少在肉眼看上去}。
+通过编程作业，也更加熟悉了一些C语言和\LaTeX 。
+
+\newpage
+\section{附录}
+
+\begin{appendices}
+
+
+
+\section{产生随机数种子的C语言程序}
+\begin{lstlisting}[language = C]
+#include <stdio.h>
+#include <stdlib.h>
+
+//利用/dev/random 产生随机种子
+
+int my_randomseed(int seed[],int n){
+
+//seed为存储随机种子的数据，n为所需要种子的个数
+
+		FILE * fp1 = fopen("/dev/random","r");
+
+		for(int i=0;i<n;i++){
+				fread(&seed[i], 1, sizeof(int), fp1);
+		}
+
+fclose(fp1);
+
+return 0;
+}
+
+int main(){
+int ranI[97];
+
+my_randomseed(ranI,97);
+
+FILE * fp;
+
+fp = fopen("ranI.txt","w+");
+
+for(int i=0;i<96;i++){
+		fprintf(fp,"%d,",ranI[i]);
+}
+
+fprintf(fp,"%d",ranI[96]); //最后一个数据后不加 ","
+
+fclose(fp);
+
+return 0;
+
+}	
+\end{lstlisting}
+
+
+\section{由上述程序产生的随机数文件1}
+\label{971}
+
+809576131,-1025892587,558213681,2056216731,-1652403892,-849346475,\\
+-947398527,-2082766203,131013461,753913035,-634671236,995067675,-1025241712,\\
+-57745909,187349022,-1487194468,174292363,-1523076266,-1381700026,1751317799,\\
+812085654,-384904015,935241924,-2120102602,-1176252493,2084189454,-1308162651,\\
+-721701972,1776417975,-1953284964,-1385173859,-1156931024,-272454405,-1527712783,\\
+1040918716,966408491,-899150905,-1102248190,363327930,1940215723,924796768,861925965,\\
+1030548881,1694050903,-1841641721,-5770120,448493076,1650846131,1012895949,\\
+-2135767741,1924774890,-885687700,-219340479,-1417922044,-1101149761,1198019956,\\
+-1522975896,842839847,2023490906,-1533950707,1267038558,1823349522,-1476843016,\\
+786347740,1101867560,110498268,-1018391091,-1677263454,2117579346,-306068839,\\
+569112568,-1031628950,1399939025,1102660725,-526224915,212410442,-968658785,\\
+1808251768,166339465,-347114238,-1130541052,450232354,-684115741,-1313290066,\\
+140916175,-1221648810,-1079940150,2079743593,414264974,-1639098679,142289346,\\
+-2080694919,-345845707,-1201999899,1632261567,98605000,-1843368371
+
+
+\section{由上述程序产生的随机数文件2}
+\label{972}
+-753424879,1872953453,608893860,597180613,2049110889,2140413464,1070133919,\\
+-256067828,-1191457009,-574707053,-1410977199,1133706033,-404358309,1141209606,\\
+-1604908044,2123698944,1542004389,894557832,-1972430293,-1544149044,-155439154,\\
+2108522693,1220970092,697871479,-1502727159,1427890000,-1629207648,-132267497,\\
+-749675637,1645721388,-1858854966,-2111533027,-151887203,-1412609570,-876296650,\\
+-1227304997,701135804,1224292810,1805574955,-955336658,619132236,1948713847,\\
+1737807285,845890383,-1491155579,-650075247,-1329866879,1910267507,-1879619968,\\
+289013714,-24743716,1328343531,656220109,2045662973,-137884045,-1218521402,\\
+1439903068,1203175289,-2098367843,1830857371,106846260,-1413985256,584445562,\\
+-1141203261,-1584804986,-2109822000,-1573941759,1728136137,-54161293,-1017405251,\\
+1652078157,1750018552,1594371093,1725375480,1445249495,-1114348371,-237895730,\\
+1481242551,-1581295506,-970746651,397491742,462545489,-436989135,-1245824880,\\
+-945627835,773430348,429365809,-108076855,620101426,1362478058,-923198353,\\
+-1447637852,-1914066341,-1674823883,824439501,-461869274,-634359412
+
+
+\section{C语言程序源码}
+
+\begin{lstlisting}[language = C]
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <math.h>
+#define a 16807
+#define b 0
+#define m 2147483647
+#define r (m%a)
+#define q (m/a)
+#define Pi 3.1415926
+
+
+
+int my_filereader_int(char str[],int num[],int n){
+    FILE * fp;
+    fp = fopen(str,"r");
+
+    for(int i=0;i<n-1;i++)
+    {
+        fscanf(fp,"%d,",&num[i]);
+
+    }
+    fscanf(fp,"%d",&num[n-1]);    //最后一个数据后不加 ","
+    fclose(fp);
+    return 0;
+}
+
+int my_filewriter(char str[],double num[],int n){
+    FILE * fp;
+    fp = fopen(str,"w+");
+
+    for(int i=0;i<n;i++)
+    {
+        if (i == (n-1)){
+            fprintf(fp,"%lf",num[i]);
+            break;
+        }
+        fprintf(fp,"%lf,",num[i]);
+
+    }
+    fclose(fp);
+    return 0;
+}
+
+
+int my_schrage_sphere(int seed[],double rantheta[],double ranphi[],int n){
+    for (int i = 0; i < n; i++) {
+        if(seed[0] == m-1){
+            if(a >=  b){    //由于Schrage方法只对z in (0,m-1)成立，故这里要讨论z == m-1的情况
+                seed[0] = m + (b-a) % m;
+            }
+            else   seed[0] =  (b-a) % m;
+
+        }
+        if(seed[1] == m-1){
+            if(a >=  b){    //由于Schrage方法只对z in (0,m-1)成立，故这里要讨论z == m-1的情况
+                seed[1] = m + (b-a) % m;
+            }
+            else   seed[1] =  (b-a) % m;
+
+        }
+        seed[0] = ((a * (seed[0] % q) - r * (seed[0] /  q)) + b % m ) % m;
+        seed[1] =((a * (seed[1] % q) - r * (seed[1] /  q)) + b % m ) % m;
+        if (seed[0] >= 0) {
+            rantheta[i] = acos(2 * (seed[0] / (double)m) - 1);
+        }
+        else{
+            rantheta[i] = acos(2 * ((seed[0] + m) / (double)m) - 1);
+        }
+
+        if (seed[1] >= 0) {
+            ranphi[i] = 2 * Pi * seed[1] / (double)m;
+        }
+        else{
+            ranphi[i] = 2 * Pi * (seed[1] + m) / (double)m;
+        }
+
+
+    }
+
+}
+
+
+
+//Fibonacci延迟器
+int my_fibonacci_theta(double ran[],int ranI[],int n,int o,int p){
+    int temp;
+
+    for (int i = p; i < n; i++) {   //ranI[i % p]存放的为第i项
+
+        temp = (ranI[i % p] - ranI[(i % p+(p-o)) % p]) ;  //递推式
+
+        if(temp >= 0) ranI[i % p] = temp ;
+        else ranI[i % p] = temp + 1;  //递推得到的新结果放入ranI中i%p一项
+
+        if (ranI[i % p] >= 0) {   //计算ran
+            ran[i-p] = ranI[i % p] / (double) m;
+
+        } else {
+            ran[i-p] = (ranI[i % p] + m) / (double) m;
+        }
+        ran[i-p] = acos(2*ran[i-p]-1);
+
+    }
+    return 0;
+}
+
+//Fibonacci延迟器
+int my_fibonacci_phi(double ran[],int ranI[],int n,int o,int p){
+    int temp;
+
+    for (int i = p; i < n; i++) {   //ranI[i % p]存放的为第i项
+
+        temp = ranI[i % p] - ranI[(i % p+(p-o)) % p];  //递推式
+
+        if(temp >= 0) ranI[i % p] = temp ;
+        else ranI[i % p] = temp + 1;  //递推得到的新结果放入ranI中i%p一项
+
+        if (ranI[i % p] >= 0) {   //计算ran
+            ran[i-p] = ranI[i % p] / (double) m;
+        } else {
+            ran[i-p] = (ranI[i % p] + m) / (double) m;
+        }
+        ran[i-p] = 2*Pi*ran[i-p];
+
+    }
+    return 0;
+}
+
+int main() {
+
+    int N;
+    char str[50];
+    printf("请输入您所需要的总点数：");
+    while (!scanf("%d",&N)){   //简单的输入检查
+        gets(str);
+        printf("\nInput error,please try again\n");
+        printf("请输入您所需要的总点数：");
+    }
+
+
+
+    int seed[2] = {34028207,1677078722};  //设定初始种子值，来源于读取"/dev/random"
+
+    double * rantheta = malloc(sizeof(double)*N);
+    double * ranphi = malloc(sizeof(double)*N);
+
+
+
+
+
+    int o,p;
+    inputpq:printf("请输入Marsaglia方法的延迟整数对[p,q](建议输入97,33)(英文逗号隔开)：");
+    while (!scanf("%d,%d",&o,&p)) {   //相对简单的输入检查
+        gets(str);
+        printf("\nInput error,please try again\n");
+        printf("请输入Marsaglia方法的延迟整数对[p,q](建议值97,33)(英文逗号隔开)：");
+    }
+
+
+    int temp;
+    if(o > p){    //使 p > o
+        temp = o;
+        o = p;
+        p=temp;
+    }
+    if( N-p < 3 ) {    //排除N相对于p,q太小的情况发生
+        printf("输入的p,q值相对于总点数太大了，请重试!\n");
+        goto inputpq;
+    }
+
+
+    if(N > 1000000) printf("您输入的参数已接受，正在计算请稍后~\n");
+
+    my_schrage_sphere(seed,rantheta,ranphi,N); //16807方法生成theta,phi
+    
+    my_filewriter("theta_16807.dat",rantheta,N);
+    my_filewriter("phi_16807.dat",ranphi,N);
+    
+    free(rantheta);
+    free(ranphi);
+    
+    rantheta = malloc(sizeof(double)*(N+p));
+    ranphi = malloc(sizeof(double)*(N+p));
+
+    int *ranI1 = malloc(sizeof(int) * p);      //用来存放递推数列
+    int *ranI2 = malloc(sizeof(int) * p);
+    my_filereader_int("ranI-1.txt",ranI1,p);   //读取之前利用"/dev/random"产生的初始随机数组
+    my_filereader_int("ranI-2.txt",ranI2,p);
+
+    my_fibonacci_theta(rantheta,ranI1,N+p,o,p);
+    my_fibonacci_phi(ranphi,ranI2,N+p,o,p);
+
+
+    my_filewriter("theta_fibo.dat",rantheta,N);
+    my_filewriter("phi_fibo.dat",ranphi,N);
+
+
+
+    return 0;
+}
+\end{lstlisting}
+
+
+\section{可视化绘图python程序源码}
+
+\begin{lstlisting}[language = python]
+
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+import numpy as np
+from IPython.core.pylabtools import figsize # import figsize
+figsize(7, 7) # 设置 figsize
+plt.rcParams['savefig.dpi'] = 1000 #图片像素
+plt.rcParams['figure.dpi'] = 1000 #分辨率
+# 默认的像素：[6.0,4.0]，分辨率为100，图片尺寸为 600&400
+
+fig = plt.figure()
+ax = Axes3D(fig)
+theta = []
+phi = []
+
+with open('cmake-build-debug/theta_16807.dat', 'r') as f:
+    while True:
+        lines = f.readline() # 整行读取数据
+        if not lines:
+            break
+            pass
+        tmp = [float(i) for i in lines.split(',')] # 将整行数据分割处理。        theta.append(tmp)  # 添加新读取的数据
+        pass
+    theta = np.array(theta) # 将数据从list类型转换为array类型。
+pass
+
+    
+with open('cmake-build-debug/phi_16807.dat', 'r') as f:
+    while True:
+        lines = f.readline() # 整行读取数据
+        if not lines:
+            break
+            pass
+        tmp = [float(i) for i in lines.split(',')] # 将整行数据分割处理。
+        phi.append(tmp)  # 添加新读取的数据
+        pass
+    phi = np.array(phi) # 将数据从list类型转换为array类型。
+pass
+    
+    
+    
+
+X = np.sin(theta) * np.cos(phi)
+Y= np.sin(theta) * np.sin(phi)
+Z = np.cos(theta)
+
+
+# 绘制散点图
+ax.scatter(X, Y, Z,s=0.0001)    #画散点图
+ax.view_init(elev=90,azim=45)   #设置观察角度
+ax.set_aspect('equal')   #设置三个坐标轴比例尺相同
+ax.set_xlabel('X')
+ax.set_ylabel('Y')
+ax.set_zlabel('Z')
+plt.savefig("1.png")
+	
+\end{lstlisting}
+
+
+\end{appendices}
+
+
+
+
+\end{document}
