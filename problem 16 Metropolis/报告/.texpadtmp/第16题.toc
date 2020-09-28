@@ -1,0 +1,8 @@
+\contentsline {section}{\numberline {1}题目描述}{1}{section.1}% 
+\contentsline {section}{\numberline {2}理论推导}{1}{section.2}% 
+\contentsline {section}{\numberline {3}Metropolis算法}{2}{section.3}% 
+\contentsline {section}{\numberline {4}程序使用方法}{3}{section.4}% 
+\contentsline {section}{\numberline {5}程序结果与讨论}{3}{section.5}% 
+\contentsline {section}{\numberline {6}附录}{6}{section.6}% 
+\contentsline {section}{\numberline {A}Metropois算法抽样C语言源程序}{6}{附录.1.A}% 
+\contentsline {section}{\numberline {B}可视化绘图及数据处理Python程序源码}{9}{附录.1.B}% 
