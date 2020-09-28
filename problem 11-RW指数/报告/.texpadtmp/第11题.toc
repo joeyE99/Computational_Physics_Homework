@@ -1,0 +1,14 @@
+\contentsline {section}{\numberline {1}题目描述}{1}{section.1}
+\contentsline {section}{\numberline {2}算法}{2}{section.2}
+\contentsline {subsection}{\numberline {2.1}指数定义}{2}{subsection.2.1}
+\contentsline {subsection}{\numberline {2.2}一维情况}{2}{subsection.2.2}
+\contentsline {subsection}{\numberline {2.3}二维情况}{2}{subsection.2.3}
+\contentsline {subsection}{\numberline {2.4}三维情况}{3}{subsection.2.4}
+\contentsline {subsection}{\numberline {2.5}16807产生器}{3}{subsection.2.5}
+\contentsline {subsection}{\numberline {2.6}RW算法简述}{4}{subsection.2.6}
+\contentsline {section}{\numberline {3}程序使用方法}{4}{section.3}
+\contentsline {section}{\numberline {4}程序结果与讨论}{4}{section.4}
+\contentsline {section}{\numberline {5}心得与体会}{7}{section.5}
+\contentsline {section}{\numberline {6}附录}{8}{section.6}
+\contentsline {section}{\numberline {A}C语言源程序}{8}{附录.1.A}
+\contentsline {section}{\numberline {B}可视化绘图及数据处理Python程序源码}{14}{附录.1.B}
