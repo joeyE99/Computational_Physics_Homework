@@ -1,0 +1,12 @@
+\contentsline {section}{\numberline {1}题目描述}{1}{section.1}
+\contentsline {section}{\numberline {2}算法}{2}{section.2}
+\contentsline {subsection}{\numberline {2.1}一维情况}{2}{subsection.2.1}
+\contentsline {subsection}{\numberline {2.2}二维情况}{2}{subsection.2.2}
+\contentsline {subsection}{\numberline {2.3}三维情况}{2}{subsection.2.3}
+\contentsline {subsection}{\numberline {2.4}16807产生器}{2}{subsection.2.4}
+\contentsline {section}{\numberline {3}程序使用方法}{3}{section.3}
+\contentsline {section}{\numberline {4}程序结果与讨论}{3}{section.4}
+\contentsline {section}{\numberline {5}心得与体会}{11}{section.5}
+\contentsline {section}{\numberline {6}附录}{12}{section.6}
+\contentsline {section}{\numberline {A}C语言源程序}{12}{附录.1.A}
+\contentsline {section}{\numberline {B}可视化绘图python程序源码}{18}{附录.1.B}

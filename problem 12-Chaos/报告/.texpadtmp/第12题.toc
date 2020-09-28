@@ -1,0 +1,11 @@
+\contentsline {section}{\numberline {1}题目描述}{1}{section.1}% 
+\contentsline {section}{\numberline {2}算法}{2}{section.2}% 
+\contentsline {section}{\numberline {3}程序使用方法}{2}{section.3}% 
+\contentsline {section}{\numberline {4}程序结果与讨论}{2}{section.4}% 
+\contentsline {subsection}{\numberline {4.1}方程参数对于迭代结果影响的可视化结果}{2}{subsection.4.1}% 
+\contentsline {subsection}{\numberline {4.2}Feigenbaum 常数的计算}{8}{subsection.4.2}% 
+\contentsline {subsection}{\numberline {4.3}关于分岔值计算时的方法讨论}{9}{subsection.4.3}% 
+\contentsline {section}{\numberline {5}心得与体会}{11}{section.5}% 
+\contentsline {section}{\numberline {6}附录}{12}{section.6}% 
+\contentsline {section}{\numberline {A}C语言源程序}{12}{附录.1.A}% 
+\contentsline {section}{\numberline {B}可视化绘图及数据分析Python程序源码}{14}{附录.1.B}% 
