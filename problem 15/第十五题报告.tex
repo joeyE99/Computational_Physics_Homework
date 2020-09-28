@@ -1,0 +1,112 @@
+\documentclass[a4paper,11pt]{article}
+\author{ 杨旭鹏  \  PB17000234}
+\date{2019年秋季}
+\title{计算物理A 第十五题}
+
+\usepackage{ctex}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{lastpage}
+\usepackage{hyperref}
+\usepackage{appendix}
+\usepackage{geometry}
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+\makeatletter\def\@captype{table}\makeatother
+\usepackage{enumerate}
+ 
+
+
+\begin{document}
+\maketitle
+
+\section{题目描述}
+一篇应用MCMC方法研究聚乙烯小球自组装结构的研究论文“Formation of waferscale monolayer close packed polystyrene spheres template by thermally assisted self-assembly”在投稿某刊物后被审稿人拒稿，现作者欲以向刊物编辑申诉。请根据 文章内容和审稿人评审意见，撰写申诉理由（你认为，作者在文中阐述的方法和 概念以及审稿人的评论意见有哪些是合理的，哪些是需要修正的，或者哪些是需 要进一步阐明的）。进一步，如果你是作者的话，你将如何进行该工作以及建立 模型？
+
+\section{对于审稿人意见带来的想法}
+
+\subsection{Referee 1}
+\begin{enumerate}
+\item  
+对于审稿人认为作者的MC模拟并没有合适的实行的看法，我觉得比较认同。而作者的回复部分确实也没有问题，并表示审稿人没有给出具体原因。我认为Matropolis抽样方法本质上是一种重要抽样方法，他是用来对平衡态系综进行抽样的，也要求具体抽样方法满足细致平衡的要求，故其\textbf{并不能用来模拟非平衡状态以及动力学过程}。如果我是作者，我会尝试使用动力学方法进行模拟。
+
+\item 
+关于审稿人认为计算模拟结果与实验结果之间没法确切类比的看法，本人也表示赞同。而作者回复中存在错误。其计算模拟并没有考虑多层的情况，所以不可能反映实验中对于多层出现的概率与温度的关系，而我认为只有在小球悬浊液浓度较低，温度合适的情况下，才可以忽略多层的情况（根据作者的SEM照片，在此情况下几乎没有多层的出现）。而对于温度过高而引起液体蒸发过快导致小球自组装时间减少的情况，作者也并没有在计算模拟中体现，故对于结果中在$45 ^\circ C$处出现空位最少的结果表示怀疑，可能是由于一次模拟的偶然性导致，作者可以多次模拟取结果的平均值来找规律(虽然我强烈怀疑用作者的模型应该是温度越高空位越少)。
+
+\item
+值得注意的是，实验上在$45 ^\circ C$也不能避免有位错的出现，而作者的模拟模型中利用三角格点显然不会出现位错的出现，模拟的有效性确实值得怀疑。三角格点在处理小球间距远大于小球半径的问题中是没有问题的，但对于自组装问题来说这样设置格点有点不太合适，我认为\textbf{应放弃格点模型}。
+
+\end{enumerate}
+
+
+
+\subsection{Referee 2}
+
+审稿人认为作者的模拟并没有预测的能力，由SEM照片做傅里叶变换在温度变化时得到的前3个频率的亮度变化不大，然而模拟结果在45$^\circ C$处有一峰值。我认为审稿人的担心是有依据的。确实实验上得出的数据变化实在是太小，几乎不能说明问题。另一方面，根据作者引用的文献\textsl{W. Khunsin, G. Kocher, S. G. Romanov and C. M. S. Torres, Adv.Funct. Mater., 2008, 18, 2471-2479.}，其中提到比较傅里叶变换后第一频率的幅度值可以比较晶体的有序性，（作者原话：Thus, by comparing the magnitudes of the ﬁrst harmonic of different FT patterns one can judge which lattice is more ordered.）并未提到高次频率与晶体有序性之间的关系，而作者的模拟结果只有第二频率上才有随温度的明显变化，我觉的说服力不强，还需进一步的考证。并且我觉得应多次模拟取平均以减小偶然性带来的影响。
+
+
+
+
+\subsection{Referee 3}
+\begin{enumerate}
+\item
+审稿人认为将相互作用只局限在相邻小球不太稳妥。我本人认为占主导地位的毛细力确实在距离比较远的情况下力比较小，可以做邻近截断。但模型把一些小球作为凝结核，一些作为可移动小球，我认为模型本身就很有问题，找不到任何这样近似的理由，而且作者只考虑核与可移动小球之间的相互作用我认为不合理。查看作者毛细力所引用的文献\textsl{P. A. Kralchevsky and K. Nagayama, Advances in Colloid and Interface Science, 2000, 85, 145-192.}发现文中的公式有限制条件：
+\begin{equation}
+	F = -2 \pi \sigma Q_{1}Q_{2}/L ~~ , r_{k} \ll L \ll q^{-1}
+\end{equation}
+其中F为两小球之间的作用力，$Q$为毛细力作用等效电荷，有$Q_{i}= r_{i}Sin(\psi_{i}) $（$r_{i}$为第i个小球与液体的接触线半径，$\psi_{i}$为接触角），$L$为两小球的球心距离，$q$为关于液体的一常数（对于水，$q^{-1} = 2.7 mm $）作者并未说明此式成立的条件适用于本文的情况，并且对于本文所讨论的自组装问题，小球之间的间距有可能很近，会不满足$r_{k} \ll L$这一条件，故我认为作者关于\textbf{毛细力势能的式子使用错误}。而且作者在之后提出Q的简化表达式，并没有任何依据。
+
+\item  审稿人认为Q因子中含有步数令人匪夷所思。我认为是作者将Metropolis抽样方法误作为动力学模拟过程导致。Metropolis作为对平衡体系的抽样，其势能中固然不应该出现时间项（步数）。但对于动力学过程而言，体系的势能必定与时间有关。作者用\textsl{A. Li and G. Ahmadi, Aerosol science and technology, 1992, 16, 209-226.}进行反驳。但这篇文献里面的Brownian force表达式为：
+\begin{equation}
+	n_{i}(t) = G_{i}\sqrt{\frac{\pi S_{o}}{\Delta t}}
+\end{equation}
+里面并不含有步数（时间）参数，我并不清楚作者的意思是什么。
+
+\item  审稿人认为模拟的结束判据不具有道理。我认同审稿人的意见。而且值得注意的是，若按照作者的方法进行模拟，Q中含有步数，则体系的总能量应一直随步数衰减至0，故我认为作者\textbf{结束计算的判据没有任何依据}。
+
+\item  审稿人认为模型中并没有自组装过程，认为粒子初始化时放置在三角格点位置，并有随机空位有问题。作者通过\textsl{A. T. Skjeltorp and P. Meakin, Nature, 1988, 335, 424-426.}进行反驳。我认为，虽然这篇文章初始粒子时也是在三角格点位置上，但是模拟的过程与本文差别很大。引用的这篇文献并没有使用固定的三角格点进行模拟，其中无论是粒子与粒子的强健还是粒子与衬底的弱键均利用谐振子进行近似，是允许错位的产生的。而且引用文献中模拟的情况为两篇玻璃片间的裂纹生成长过程，提到了液体蒸发的速率很慢（正文第一段），是可以忽略液体蒸发带来的影响的，与本文情况差很多，本文按理说应该考虑液体的蒸发带来的影响。
+
+\item  审稿人认为作者的改良Metropolis抽样方法有问题。我个人也认为作者的\textbf{抽样方法比较混乱}。首先，作者认为小球移动到下一可能位置时的概率依赖于下一可能位置能量。即：
+\begin{equation}
+	p'_{k} =  \frac{p_{k}}{\sum_{j}p_{j}}
+\end{equation}
+但后面又给出概率：
+\begin{equation}
+	p(n\rightarrow s ) = min[1,p_{n}]
+\end{equation}
+并不依赖与下一可能位置的能量，前后矛盾。若认为后面的式子为作者的笔误，作者的本意为：
+\begin{equation}
+	p(n\rightarrow s ) = \frac{p_{s}}{\sum_{j}p_{j}}  min[1,\frac{p_{s}}{p_{n}}]
+\end{equation}
+其中$\sum_{j}$为对位置n周围的位置求和。则此式不满足细致平衡原理，因为：
+\begin{equation}
+\begin{aligned}
+	p_{x}W( x\rightarrow x' ) &=  \frac{p_{x}p_{x'}}{\sum_{j}p_{x,j}}  min[1,\frac{p_{x'}}{p_{x}}] \\ 
+	p_{x'}W( x'\rightarrow x ) &=  \frac{p_{x}p_{x'}}{\sum_{j}p_{x',j}}  min[1,\frac{p_{x}}{p_{x'}}]
+\end{aligned}
+\end{equation}
+其中，$p_{x,j}$为位点$x$周围的位点。假设$p_{x} > p_{x'}$，上面2式给出的值并不相等。所以我并没有搞懂作者究竟想要表达什么。
+
+
+\end{enumerate}
+
+\section{申诉理由}
+鉴于上面讨论的种种问题，我觉得这篇文章还是不要申诉了吧，作者应该将上述问题解决后再重新投稿。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}
